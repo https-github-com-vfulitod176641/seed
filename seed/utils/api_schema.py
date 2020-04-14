@@ -86,5 +86,6 @@ class AutoSchemaHelper(AutoSchema):
 
     def get_manual_fields(self, path, http_method):
         default_fields = AutoSchema.get_manual_fields(self, path, http_method)
-
+        # if http_method == "POST" and path == '/api/v3/column_list_profiles/':
+        #     import pdb; pdb.set_trace()
         return self.manual_fields.get((http_method, self.view.action), default_fields)
