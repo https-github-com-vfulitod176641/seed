@@ -16,6 +16,17 @@ class AutoSchemaHelper(SwaggerAutoSchema):
         'integer': openapi.TYPE_INTEGER,
     }
 
+    @classmethod
+    def _openapi_type(cls, type_name):
+        """returns an openapi type
+
+        :param type_name: str (e.g. 'string', 'boolean', 'integer')
+        :return: openapi.TYPE_*
+        """
+        if type_name not in cls.openapi_types:
+            raise Exception(f'Invalid type "{type_name}"; expected one of {cls.openapi_types.keys()}')
+        return cls.openapi_types[type_name]
+
     @staticmethod
     def base_field(name, location_attr, description, required, type):
         """
@@ -68,6 +79,25 @@ class AutoSchemaHelper(SwaggerAutoSchema):
             description=description,
             required=required,
             type=openapi.TYPE_BOOLEAN
+        )
+
+    @classmethod
+    def query_array(cls, name, item_type, required, description):
+        """Constructs openapi.Parameter of array type, with items of item_type
+
+        :param name: str, name of query parameter
+        :param item_type: str, one of this class' openapi types (e.g. 'integer', 'string', 'boolean')
+        :param required: bool
+        :param description: str
+        """
+        openapi_type = cls._openapi_type(item_type)
+        return openapi.Parameter(
+            name,
+            openapi.IN_QUERY,
+            type=openapi.TYPE_ARRAY,
+            items=openapi.Items(type=openapi_type),
+            required=required,
+            description=description,
         )
 
     @staticmethod
